@@ -17,7 +17,8 @@ public:
 class URL
 {
 public:
-	static void open(char* url);
+	static void open(const char* url);
+	static const std::string encode(const std::string& src);
 };
 
 class Locale
