@@ -1,61 +1,5 @@
 #include "Objects.h"
 
-BillManager::BillManager(char* name, cocos2d::SpriteFrame* frame, cocos2d::SpriteFrame* frameIcon, cocos2d::SpriteFrame* frameFloating, int value, int unlockValue)
-{
-	mName = name;
-	mSpriteFrame = frame;
-	mSpriteFrame->retain();
-	mSpriteFrameIcon = frameIcon;
-	mSpriteFrameFloating = frameFloating;
-	mValue = value;
-	mUnlockValue = unlockValue;
-}
-
-BillManager::~BillManager()
-{
-	cocos2d::log("destroy billfactory");
-}
-
-cocos2d::SpriteFrame* BillManager::getSpriteFrame()
-{
-	return mSpriteFrame;
-}
-
-cocos2d::SpriteFrame* BillManager::getFloatingSpriteFrame()
-{
-	return mSpriteFrameFloating;
-}
-
-cocos2d::SpriteFrame* BillManager::getIconSpriteFrame()
-{
-	return mSpriteFrameIcon;
-}
-
-const char* BillManager::getName()
-{
-	return mName;
-}
-
-int BillManager::getValue()
-{
-	return mValue;
-}
-
-int BillManager::getUnlockValue()
-{
-	return mUnlockValue;
-}
-
-Bill* Bill::create(BillManager* factory)
-{
-	Bill* ret = new Bill();
-	ret->initWithSpriteFrame(factory->getSpriteFrame());
-	ret->mFactory = factory;
-	ret->autorelease();
-	
-	return ret;
-}
-
 MyMenuItem* MyMenuItem::create(cocos2d::Node* sprite, const cocos2d::ccMenuCallback& callback)
 {
 	return create(sprite, nullptr, callback);
@@ -129,32 +73,6 @@ cocos2d::Sprite* ObjectPool::onAllocatePoolItem()
 }
 
 void ObjectPool::onRecycleItem(cocos2d::Sprite* item)
-{
-	item->setScale(1);
-	item->stopAllActions();
-}
-
-void MoneyPool::init(int capacity, BillManager* factory, cocos2d::Node* parent)
-{
-	if (getAvailableItemCount() > 0)
-		clearPool();
-	
-	mFactory = factory;
-	mParent = parent;
-	
-	initWithCapacity(capacity);
-}
-
-Bill* MoneyPool::onAllocatePoolItem()
-{
-	Bill* sprite = Bill::create(mFactory);
-	sprite->setVisible(false);
-	sprite->pause();
-	mParent->addChild(sprite);
-	return sprite;
-}
-
-void MoneyPool::onRecycleItem(Bill* item)
 {
 	item->setScale(1);
 	item->stopAllActions();

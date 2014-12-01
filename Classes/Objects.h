@@ -3,35 +3,6 @@
 
 #include "cocos2d.h"
 
-class BillManager : public cocos2d::Ref
-{
-public:
-	BillManager(char* name, cocos2d::SpriteFrame* frame, cocos2d::SpriteFrame* frameIcon, cocos2d::SpriteFrame* frameFloating, int value, int unlockValue);
-	~BillManager();
-	
-	cocos2d::SpriteFrame* getSpriteFrame();
-	cocos2d::SpriteFrame* getFloatingSpriteFrame();
-	cocos2d::SpriteFrame* getIconSpriteFrame();
-	const char* getName();
-	int getValue();
-	int getUnlockValue();
-private:
-	cocos2d::SpriteFrame* mSpriteFrame;
-	cocos2d::SpriteFrame* mSpriteFrameIcon;
-	cocos2d::SpriteFrame* mSpriteFrameFloating;
-	char* mName;
-	int mValue;
-	int mUnlockValue;
-};
-
-class Bill : public cocos2d::Sprite
-{
-public:
-	static Bill* create(BillManager* factory);
-private:
-	BillManager* mFactory;
-};
-
 class MyMenuItem : public cocos2d::MenuItemSprite
 {
 public:
@@ -147,17 +118,6 @@ protected:
 	cocos2d::SpriteFrame* mSpriteFrame;
 	cocos2d::Sprite* onAllocatePoolItem() override;
 	void onRecycleItem(cocos2d::Sprite* item) override;
-};
-
-class MoneyPool : public GenericPool<Bill*>
-{
-public:
-	void init(int capacity, BillManager* factory, cocos2d::Node* parent);
-protected:
-	cocos2d::Node* mParent;
-	BillManager* mFactory;
-	Bill* onAllocatePoolItem() override;
-	void onRecycleItem(Bill* item) override;
 };
 
 #endif // __OBJECTS_H__
