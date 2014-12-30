@@ -144,6 +144,14 @@ void GameScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
 		
 		AppDelegate::closeApp();
 	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_VOLUME_DOWN)
+	{
+		CocosDenshion::SimpleAudioEngine::getInstance()->decreaseVolume();
+	}
+	else if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_VOLUME_UP)
+	{
+		CocosDenshion::SimpleAudioEngine::getInstance()->increaseVolume();
+	}
 }
 
 void GameScene::onComeToBackground()

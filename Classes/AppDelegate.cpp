@@ -80,7 +80,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	pluginAnalytics->startSession("UA-999-999");
 	pluginAnalytics->setCaptureUncaughtException(true);
 	pluginAnalytics->setSessionContinueMillis(300);
-
+	
 	/*
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 	const char *gsPluginName = "AppleGameCenter";
@@ -107,7 +107,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	pluginIAP->configDeveloperInfo(devInfo);
 	pluginIAP->setDebugMode(true);
 	*/
-
+	
 	cocos2d::UserDefault* ud = cocos2d::UserDefault::getInstance();
 	showAds = !ud->getBoolForKey("remove_ads", false);
 	
