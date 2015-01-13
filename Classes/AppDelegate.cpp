@@ -1,5 +1,3 @@
-#include <algorithm>
-
 #include "AppDelegate.h"
 
 const int AppDelegate::BASE_WIDTH = 120;
@@ -26,6 +24,17 @@ AppDelegate::~AppDelegate()
 	
 }
 
+//if you want a different context,just modify the value of glContextAttrs
+//it will takes effect on all platforms
+void AppDelegate::initGLContextAttrs()
+{
+	//set OpenGL context attributions,now can only set six attributions:
+	//red,green,blue,alpha,depth,stencil
+	GLContextAttrs glContextAttrs = {8, 8, 8, 8, 24, 8};
+	
+	cocos2d::GLView::setGLContextAttrs(glContextAttrs);
+}
+
 bool AppDelegate::applicationDidFinishLaunching()
 {
 	// initialize director
@@ -33,7 +42,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 	auto glview = director->getOpenGLView();
 	if (!glview)
 	{
-		glview = cocos2d::GLView::createWithRect("game-model", cocos2d::Rect(0, 0, 480, 640), 1);
+		glview = cocos2d::GLViewImpl::createWithRect(std::string("game-model"), cocos2d::Rect(0, 0, 480, 640), 1.0f);
 		director->setOpenGLView(glview);
 	}
 	
@@ -158,7 +167,7 @@ void AppDelegate::applicationDidEnterBackground()
 	cocos2d::Director::getInstance()->stopAnimation();
 	
 	// if you use SimpleAudioEngine, it must be pause
-	// SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+	CocosDenshion::SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
 }
 
 // this function will be called when the app is active again
@@ -167,5 +176,5 @@ void AppDelegate::applicationWillEnterForeground()
 	cocos2d::Director::getInstance()->startAnimation();
 	
 	// if you use SimpleAudioEngine, it must resume here
-	// SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+	CocosDenshion::SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
 }

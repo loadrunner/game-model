@@ -1,155 +1,172 @@
-cmake_minimum_required(VERSION 2.6)
+#/****************************************************************************
+# Copyright (c) 2013-2014 cocos2d-x.org
+#
+# http://www.cocos2d-x.org
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+# ****************************************************************************/
+cmake_policy(SET CMP0017 NEW)
+
+cmake_minimum_required(VERSION 2.8)
 
 set(APP_NAME game-model)
-project (${APP_NAME})
+project(${APP_NAME})
 
-include(/usr/local/cocos2d-x/build/BuildHelpers.CMakeLists.txt)
+set(COCOS2D_ROOT /usr/local/cocos2d-x)
 
-option(USE_CHIPMUNK "Use chipmunk for physics library" ON)
-option(USE_BOX2D "Use box2d for physics library" OFF)
-option(DEBUG_MODE "Debug or release?" ON)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${COCOS2D_ROOT}/cmake/Modules/")
+include(CocosBuildHelpers)
 
-if(DEBUG_MODE)
-  set(CMAKE_BUILD_TYPE DEBUG)
-else(DEBUG_MODE)
-  set(CMAKE_BUILD_TYPE RELEASE)
-endif(DEBUG_MODE)
+# libcocos2d
+set(BUILD_CPP_TESTS OFF CACHE BOOL "turn off build cpp-tests")
+set(BUILD_LUA_LIBS OFF CACHE BOOL "turn off build lua-tests")
+add_subdirectory(${COCOS2D_ROOT} cocos2d)
 
-if (MSVC)
-	set(CMAKE_C_FLAGS_DEBUG "-DCOCOS2D_DEBUG=1")
-	set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+# Some macro definitions
+if(WINDOWS)
+  if(BUILD_SHARED_LIBS)
+    ADD_DEFINITIONS (-D_USRDLL -D_EXPORT_DLL_ -D_USEGUIDLL -D_USREXDLL -D_USRSTUDIODLL)
+  else()
+    ADD_DEFINITIONS (-DCC_STATIC)
+  endif()
 
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_CRT_SECURE_NO_WARNINGS")
-
-elseif (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_C_FLAGS_DEBUG "-g -Wall -DCOCOS2D_DEBUG=1")
-	set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
-
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
-endif()
-
-add_definitions(-DLINUX)
-
-if(USE_CHIPMUNK)
-  message("Using chipmunk ...")
-  add_definitions(-DCC_ENABLE_CHIPMUNK_INTEGRATION=1)
-elseif(USE_BOX2D)
-  message("Using box2d ...")
-  add_definitions(-DCC_ENABLE_BOX2D_INTEGRATION=1)
-endif(USE_CHIPMUNK)
-
-# architecture
-if ( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-set(ARCH_DIR "64-bit")
+  ADD_DEFINITIONS (-DCOCOS2DXWIN32_EXPORTS -D_WINDOWS -DWIN32 -D_WIN32)
+  set(PLATFORM_FOLDER win32)
+elseif(MACOSX OR APPLE)
+  ADD_DEFINITIONS (-DCC_TARGET_OS_MAC)
+  ADD_DEFINITIONS (-DUSE_FILE32API)
+  set(PLATFORM_FOLDER mac)
+elseif(LINUX)
+  ADD_DEFINITIONS(-DLINUX)
+  set(PLATFORM_FOLDER linux)
+elseif(ANDROID)
+  ADD_DEFINITIONS (-DUSE_FILE32API)
+  set(PLATFORM_FOLDER android)
 else()
-set(ARCH_DIR "32-bit")
+  message( FATAL_ERROR "Unsupported platform, CMake will exit" )
 endif()
 
-set(PLATFORM_SRC
+
+# Compiler options
+if(MSVC)
+  ADD_DEFINITIONS(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS
+                  -wd4251 -wd4244 -wd4334 -wd4005 -wd4820 -wd4710
+                  -wd4514 -wd4056 -wd4996 -wd4099)
+else()
+  set(CMAKE_C_FLAGS_DEBUG "-g -Wall -DCOCOS2D_DEBUG=1")
+  set(CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG})
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-exceptions -std=c99")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -std=c++11 -Wno-deprecated-declarations -Wno-reorder")
+  if(CLANG)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  endif()
+endif(MSVC)
+
+
+
+set(PLATFORM_SPECIFIC_SRC)
+set(PLATFORM_SPECIFIC_HEADERS)
+if(MACOSX OR APPLE)
+set(PLATFORM_SPECIFIC_SRC
+  proj.ios_mac/ios/main.m
+  proj.ios_mac/ios/RootViewController.mm
+  proj.ios_mac/ios/AppController.mm
+)
+set(PLATFORM_SPECIFIC_HEADERS
+  proj.ios_mac/ios/RootViewController.h
+  proj.ios_mac/ios/AppController.h
+)
+elseif(LINUX) #assume linux
+set(PLATFORM_SPECIFIC_SRC
   proj.linux/main.cpp
 )
-
-set(
-GAME_SRC
-    Classes/Helpers.cpp
-    Classes/LanguageManager.cpp
-    Classes/AppDelegate.cpp
-    Classes/Loader.cpp
-    Classes/LoadingScene.cpp
-    Classes/Objects.cpp
-    Classes/GameScene.cpp
-  ${PLATFORM_SRC}
+elseif ( WIN32 )
+set(PLATFORM_SPECIFIC_SRC
+  proj.win32/main.cpp
 )
-set(COCOS2D_ROOT /usr/local/cocos2d-x)
+set(PLATFORM_SPECIFIC_HEADERS
+  proj.win32/main.h
+  proj.win32/resource.h
+)
+endif()
 
 include_directories(
   /usr/local/include/GLFW
-  ${COCOS2D_ROOT}
+  /usr/include/GLFW
   ${COCOS2D_ROOT}/cocos
-  ${COCOS2D_ROOT}/cocos/audio/include
-  ${COCOS2D_ROOT}/cocos/platform
-  ${COCOS2D_ROOT}/cocos/platform/desktop
-  ${COCOS2D_ROOT}/cocos/platform/linux
-  ${COCOS2D_ROOT}/cocos/editor-support
-  ${COCOS2D_ROOT}/external
-  ${COCOS2D_ROOT}/external/edtaa3func
-  ${COCOS2D_ROOT}/external/jpeg/include/linux
-  ${COCOS2D_ROOT}/external/tiff/include/linux
-  ${COCOS2D_ROOT}/external/webp/include/linux
-  ${COCOS2D_ROOT}/external/tinyxml2
-  ${COCOS2D_ROOT}/external/unzip
-  ${COCOS2D_ROOT}/external/freetype2/include/linux
-  ${COCOS2D_ROOT}/external/websockets/include/linux
-  ${COCOS2D_ROOT}/external/linux-specific/fmod/include/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/xxhash
-  ${COCOS2D_ROOT}/plugin/protocols/include/
+  ${COCOS2D_ROOT}/plugin/protocols/include
+  Classes
 )
-
-link_directories(
-  /usr/local/lib
-  ${COCOS2D_ROOT}/external/jpeg/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/tiff/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/webp/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/freetype2/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/websockets/prebuilt/linux/${ARCH_DIR}
-  ${COCOS2D_ROOT}/external/linux-specific/fmod/prebuilt/${ARCH_DIR}
-)
-
-if(USE_CHIPMUNK)
-	include_directories(${COCOS2D_ROOT}/external/chipmunk/include/chipmunk)
-	# chipmunk library
-	add_subdirectory(${COCOS2D_ROOT}/external/chipmunk/src cocos2d/external/chipmunk)
-endif()
-
-if(USE_BOX2D)
-	# box2d library
-	add_subdirectory(${COCOS2D_ROOT}/external/Box2D)
-endif()
-
-# unzip library
-add_subdirectory(${COCOS2D_ROOT}/external/unzip cocos2d/external/unzip)
-
-# tinyxml2 library
-add_subdirectory(${COCOS2D_ROOT}/external/tinyxml2 cocos2d/external/tinyxml2)
-
-# audio
-add_subdirectory(${COCOS2D_ROOT}/cocos/audio cocos2d/external/audio)
-
-# xxhash library
-add_subdirectory(${COCOS2D_ROOT}/external/xxhash cocos2d/external/xxhash)
-
-# cocos2d
-add_subdirectory(${COCOS2D_ROOT}/cocos cocos2d/external/cocos)
 
 # plugin proto
 add_subdirectory(${COCOS2D_ROOT}/plugin/protocols cocos2d/plugin/protocols)
 
-# add the executable
-add_executable(${APP_NAME}
-  ${GAME_SRC}
+set(GAME_SRC
+  Classes/Helpers.cpp
+  Classes/LanguageManager.cpp
+  Classes/AppDelegate.cpp
+  Classes/Loader.cpp
+  Classes/LoadingScene.cpp
+  Classes/Objects.cpp
+  Classes/GameScene.cpp
+  ${PLATFORM_SPECIFIC_SRC}
 )
 
-if ( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-set(FMOD_LIB "fmodex64")
+set(GAME_HEADERS
+  Classes/Helpers.h
+  Classes/LanguageManager.h
+  Classes/AppDelegate.h
+  Classes/Loader.h
+  Classes/LoadingScene.h
+  Classes/Objects.h
+  Classes/GameScene.h
+  ${PLATFORM_SPECIFIC_HEADERS}
+)
+
+if(GAME_HEADERS)
+add_executable(${APP_NAME} ${GAME_SRC} ${GAME_HEADERS})
 else()
-set(FMOD_LIB "fmodex")
+add_executable(${APP_NAME} ${GAME_SRC})
 endif()
 
 target_link_libraries(${APP_NAME}
-  audio
   cocos2d
   plugin_proto
-  )
+)
 
 set(APP_BIN_DIR "${CMAKE_BINARY_DIR}/bin")
 
 set_target_properties(${APP_NAME} PROPERTIES
      RUNTIME_OUTPUT_DIRECTORY  "${APP_BIN_DIR}")
 
-pre_build(${APP_NAME}
+if ( WIN32 )
+  #also copying dlls to binary directory for the executable to run
+  pre_build(${APP_NAME}
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${APP_BIN_DIR}/Resources
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${APP_BIN_DIR}/Resources
-)
+    COMMAND ${CMAKE_COMMAND} -E copy ${COCOS2D_ROOT}/external/win32-specific/gles/prebuilt/glew32.dll ${APP_BIN_DIR}/${CMAKE_BUILD_TYPE}
+	COMMAND ${CMAKE_COMMAND} -E copy ${COCOS2D_ROOT}/external/win32-specific/zlib/prebuilt/zlib1.dll ${APP_BIN_DIR}/${CMAKE_BUILD_TYPE}
+	)
+else()
+  pre_build(${APP_NAME}
+    COMMAND ${CMAKE_COMMAND} -E remove_directory ${APP_BIN_DIR}/Resources
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources ${APP_BIN_DIR}/Resources
+    )
+
+endif()
