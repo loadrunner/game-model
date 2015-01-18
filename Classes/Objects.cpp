@@ -52,7 +52,7 @@ void MyMenuItem::setEnabled(bool state)
 	}
 }
 
-void ObjectPool::init(int capacity, cocos2d::SpriteFrame* spriteFrame, cocos2d::Node* parent)
+void SpritePool::init(int capacity, cocos2d::SpriteFrame* spriteFrame, cocos2d::Node* parent)
 {
 	if (getAvailableItemCount() > 0)
 		clearPool();
@@ -63,7 +63,7 @@ void ObjectPool::init(int capacity, cocos2d::SpriteFrame* spriteFrame, cocos2d::
 	initWithCapacity(capacity);
 }
 
-cocos2d::Sprite* ObjectPool::onAllocatePoolItem()
+cocos2d::Sprite* SpritePool::onAllocatePoolItem()
 {
 	cocos2d::Sprite* sprite = cocos2d::Sprite::createWithSpriteFrame(mSpriteFrame);
 	sprite->setVisible(false);
@@ -72,7 +72,7 @@ cocos2d::Sprite* ObjectPool::onAllocatePoolItem()
 	return sprite;
 }
 
-void ObjectPool::onRecycleItem(cocos2d::Sprite* item)
+void SpritePool::onRecycleItem(cocos2d::Sprite* item)
 {
 	item->setScale(1);
 	item->stopAllActions();

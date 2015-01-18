@@ -109,7 +109,7 @@ private:
 	int mUnrecycledItemCount;
 };
 
-class ObjectPool : public GenericPool<cocos2d::Sprite*>
+class SpritePool : public GenericPool<cocos2d::Sprite*>
 {
 public:
 	void init(int capacity, cocos2d::SpriteFrame* spriteFrame, cocos2d::Node* parent);
