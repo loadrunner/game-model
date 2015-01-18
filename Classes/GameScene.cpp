@@ -58,8 +58,11 @@ bool GameScene::init()
 	listener2->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
 	dispatcher->addEventListenerWithSceneGraphPriority(listener2, this);
 	
-	auto listener3 = cocos2d::EventListenerCustom::create(EVENT_COME_TO_BACKGROUND, CC_CALLBACK_0(GameScene::onComeToBackground, this));
+	auto listener3 = cocos2d::EventListenerCustom::create(EVENT_COME_TO_FOREGROUND, CC_CALLBACK_0(GameScene::onComeToForeground, this));
 	dispatcher->addEventListenerWithSceneGraphPriority(listener3, this);
+	
+	auto listener4 = cocos2d::EventListenerCustom::create(EVENT_COME_TO_BACKGROUND, CC_CALLBACK_0(GameScene::onComeToBackground, this));
+	dispatcher->addEventListenerWithSceneGraphPriority(listener4, this);
 	
 	this->schedule(schedule_selector(GameScene::update), 0.02f);
 	this->schedule(schedule_selector(GameScene::updateSlow), 0.5f);
@@ -152,6 +155,11 @@ void GameScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::
 	{
 		CocosDenshion::SimpleAudioEngine::getInstance()->increaseVolume();
 	}
+}
+
+void GameScene::onComeToForeground()
+{
+	
 }
 
 void GameScene::onComeToBackground()
