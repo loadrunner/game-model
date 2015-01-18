@@ -45,7 +45,7 @@ public:
 	}
 	void batchAllocatePoolItems(int pCount)
 	{
-		cocos2d::log("Increasing pool capacity with %d (current size %d)", pCount, mAvailableItems.size() + mUnrecycledItemCount);
+		cocos2d::log("Increasing pool capacity with %d (current size %d)", pCount, (int) mAvailableItems.size() + mUnrecycledItemCount);
 		
 		for (int i = 0; i < pCount; i++)
 		{
