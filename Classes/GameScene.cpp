@@ -55,6 +55,7 @@ bool GameScene::init()
 	dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 	
 	auto listener2 = cocos2d::EventListenerKeyboard::create();
+	listener2->onKeyPressed = CC_CALLBACK_2(GameScene::onKeyPressed, this);
 	listener2->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
 	dispatcher->addEventListenerWithSceneGraphPriority(listener2, this);
 	
@@ -136,10 +137,16 @@ void GameScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 	
 }
 
+void GameScene::onKeyPressed(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
+{
+	cocos2d::log("button press %d", (int) keyCode);
+	
+}
+
 void GameScene::onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event)
 {
-	cocos2d::log("button press %d", keyCode);
-
+	cocos2d::log("button release %d", (int) keyCode);
+	
 	if (keyCode == cocos2d::EventKeyboard::KeyCode::KEY_ESCAPE)
 	{
 		if (AppDelegate::pluginAnalytics != nullptr)
