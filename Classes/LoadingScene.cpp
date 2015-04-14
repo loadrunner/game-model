@@ -15,8 +15,6 @@ bool LoadingScene::init()
 	if (!cocos2d::Scene::init())
 		return false;
 	
-	retain();
-	
 	mScreenSize = cocos2d::Director::getInstance()->getWinSize();
 	mVisibleSize = cocos2d::Director::getInstance()->getVisibleSize();
 	mOrigin = cocos2d::Director::getInstance()->getVisibleOrigin();
@@ -55,5 +53,5 @@ void LoadingScene::load(float dt)
 	unschedule(schedule_selector(LoadingScene::load));
 
 	auto scene = GameScene::createScene();
-	cocos2d::Director::getInstance()->pushScene(scene);
+	cocos2d::Director::getInstance()->replaceScene(scene);
 }
