@@ -1,7 +1,7 @@
 #include "AppDelegate.h"
 
-const int AppDelegate::BASE_WIDTH = 120;
-const int AppDelegate::BASE_HEIGHT = 160;
+const int AppDelegate::BASE_WIDTH = 160;
+const int AppDelegate::BASE_HEIGHT = 120;
 const float AppDelegate::SCALE_L_RES = 3.0;   //scale 0.250000
 const float AppDelegate::SCALE_M_RES = 4.0;   //scale 0.333333
 const float AppDelegate::SCALE_H_RES = 6.0;   //scale 0.500000
@@ -46,23 +46,23 @@ bool AppDelegate::applicationDidFinishLaunching()
 		director->setOpenGLView(glview);
 	}
 	
-	glview->setDesignResolutionSize(AppDelegate::BASE_WIDTH, AppDelegate::BASE_HEIGHT, ResolutionPolicy::NO_BORDER);
+	glview->setDesignResolutionSize(AppDelegate::BASE_WIDTH, AppDelegate::BASE_HEIGHT, ResolutionPolicy::NO_BORDER, ResolutionGravity::CENTER);
 	cocos2d::Size frameSize = glview->getFrameSize();
 	
 	cocos2d::log("frame size %f, %f", frameSize.width, frameSize.height);
 	
 	std::vector<std::string> searchPath;
 	
-	if (frameSize.height >= 1920 * 0.9f) {
+	if (frameSize.width >= 1920 * 0.9f) {
 		this->resolutionScale = AppDelegate::SCALE_XXH_RES;
 		searchPath.push_back("gfx/xxh_res");
-	} else if (frameSize.height >= 1280 * 0.9f) {
+	} else if (frameSize.width >= 1280 * 0.9f) {
 		this->resolutionScale = AppDelegate::SCALE_XH_RES;
 		searchPath.push_back("gfx/xh_res");
-	} else if (frameSize.height >= 960 * 0.9f) {
+	} else if (frameSize.width >= 960 * 0.9f) {
 		this->resolutionScale = AppDelegate::SCALE_H_RES;
 		searchPath.push_back("gfx/h_res");
-	} else if (frameSize.height >= 640 * 0.9f) {
+	} else if (frameSize.width >= 640 * 0.9f) {
 		this->resolutionScale = AppDelegate::SCALE_M_RES;
 		searchPath.push_back("gfx/m_res");
 	} else {
