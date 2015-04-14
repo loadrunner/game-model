@@ -24,10 +24,15 @@ private:
 	cocos2d::Size mVisibleSize;
 	cocos2d::Vec2 mOrigin;
 	
-	bool mIsGameServicesAvailable;
-	
 	cocos2d::Layer* mGameLayer;
 	cocos2d::Layer* mUILayer;
+	
+	bool mIsGameServicesAvailable;
+	
+	void initPools();
+	
+	void update(float dt);
+	void updateSlow(float dt);
 	
 	bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
 	void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
@@ -36,13 +41,6 @@ private:
 	void onKeyReleased(cocos2d::EventKeyboard::KeyCode keyCode, cocos2d::Event* event);
 	void onComeToForeground();
 	void onComeToBackground();
-	
-	void setParent(Node* child) override;
-	
-	void update(float dt);
-	void updateSlow(float dt);
-	
-	void initPools();
 };
 
 #endif // __GAMESCENE_H__

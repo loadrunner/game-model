@@ -83,12 +83,6 @@ void GameScene::initPools()
 
 }
 
-void GameScene::setParent(Node* child)
-{
-	Node::setParent(child);
-	
-}
-
 void GameScene::update(float dt)
 {
 //	timeFromLastMoney += dt;
