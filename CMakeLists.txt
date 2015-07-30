@@ -125,7 +125,6 @@ set(GAME_SRC
   Classes/LoadingScene.cpp
   Classes/Objects.cpp
   Classes/GameScene.cpp
-  Classes/Level.cpp
   ${PLATFORM_SPECIFIC_SRC}
 )
 
@@ -137,7 +136,6 @@ set(GAME_HEADERS
   Classes/LoadingScene.h
   Classes/Objects.h
   Classes/GameScene.h
-  Classes/Level.h
   ${PLATFORM_SPECIFIC_HEADERS}
 )
 
